@@ -1,0 +1,24 @@
+TrajectoryPlannerROS:
+
+  max_vel_x: 1.5 #0.5
+  min_vel_x: -0.2 #0.01
+
+  max_vel_theta: 1.0
+  min_vel_theta: -1.0
+  min_in_place_vel_theta: 0.1
+
+  acc_lim_x: 2.0
+  acc_lim_y: 0.0
+  acc_lim_theta: 1.0
+  min_in_place_vel_theta: 0.5
+  # Goal tolerance params
+  xy_goal_tolerance: 0.12
+  yaw_goal_tolerance: 0.06
+
+  # all-directions robot if true
+  holonomic_robot: true
+  # forward simulation params
+  sim_time: 2.0
+  vx_samples: 18
+  vtheta_samples: 14
+  sim_granularity: 0.05

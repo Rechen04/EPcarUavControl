@@ -1,0 +1,47 @@
+DWAPlannerROS:
+  # speed params
+  max_vel_x: 1.0 #1.5
+  min_vel_x: -0.1 #-0.2
+  max_vel_y: 0.3 #0
+  min_vel_y: -0.1 #0
+  max_vel_trans: 1 #0.5
+  min_vel_trans: -0.1 #-0.5
+  trans_stopped_vel: 0.1
+  acc_lim_trans: 2.5 #3.0
+  acc_lim_x: 2.5 #4.0
+  acc_lim_y: 2.0
+
+  max_vel_theta: 1.5 #1.5
+  min_vel_theta: -1.5 #-1.5
+  theta_stopped_vel: 0.1
+  acc_lim_theta: 3.0 #6.0
+
+  # delta above params
+  yaw_goal_tolerance: 0.07
+  xy_goal_tolerance: 0.1
+  latch_xy_goal_tolerance: falseS
+
+  # forward simulation params
+  sim_time: 2.0 #1.7
+  vx_simples: 15 #9
+  vy_samples: 3 #1
+  vtheta_samples: 30 #20
+
+  # plan ranking params
+  path_distance_bias: 32.0
+  goal_distance_bias: 24.0 #24.0
+  occdist_scale: 0.01
+  forward_point_distance: 0.325
+  stop_time_buffer: 0.2
+  scaling_speed: 0.25
+  max_scaling_fator: 0.2
+
+  # void dou params
+  oscillation_reset_dist: 0.5 #1.05
+
+  # assistant params
+  publish_traj_pc: true
+  publish_cost_grid_pc: true
+  global_frame_id: odom
+  # if diff
+  holonomic_robot: true

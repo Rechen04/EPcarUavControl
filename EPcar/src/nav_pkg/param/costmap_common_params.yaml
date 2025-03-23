@@ -1,0 +1,14 @@
+# set the 4 point of the car
+# footprint: [[-0.26,-0.24],[-0.26,0.24],[0.26,0.24],[0.26,-0.24]]
+# the over distance for avoiding crash
+inflation_radius: 0.8
+# detect the obstacle above
+obstacle_range: 6.0 # 2.0 
+# clear the obstacle beyond
+raytrace_range: 6.0 # 3.0
+
+# type of map
+map_type: costmap
+# sensor param
+observation_sources: scan
+scan: {sensor_frame: laser, data_type: LaserScan, topic: scan, marking: true, clearing: true}

@@ -1,0 +1,8 @@
+<launch>
+
+    <node pkg="ssr_pkg" type="messagePub_node" name="messagePub_node"/>
+
+    <node pkg="ssr_pkg" type="messageSub_node" name="messageSub_node" output="screen"/>
+
+
+</launch>

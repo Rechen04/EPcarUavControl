@@ -1,0 +1,8 @@
+<launch>
+
+    <node pkg="ssr_pkg" type="messagePub_node.py" name="messagePub_node"/>
+
+    <node pkg="ssr_pkg" type="messageSub_node.py" name="messageSub_node" launch-prefix="gnome-terminal -e"/>
+
+
+</launch>

@@ -1,0 +1,17 @@
+local_costmap:
+   global_frame: odom
+   robot_base_frame: base_link
+   update_frequency: 10.0
+   publish_frequency: 10.0
+   # timeover time
+   transform_tolerance: 2.0
+   # not use static_map can improve the navigation effect
+   static_map: false
+   robot_radius: 0.2      # set the R of a radius robot
+   width: 3.0
+   height: 3.0
+   resolution: 0.05
+   cost_scaling_factor: 5.0
+
+   # rviz map window will regard the robot as the center if true
+   rolling_window: true

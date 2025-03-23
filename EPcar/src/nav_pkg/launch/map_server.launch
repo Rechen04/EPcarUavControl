@@ -1,0 +1,6 @@
+<launch>
+  <!-- set map file -->
+  <arg name="map" default="test.yaml"/>
+  <!-- run map server -->
+  <node pkg="map_server" type="map_server" name="map_server" args="$(find slam_pkg)/map/$(arg map)"/>
+</launch>

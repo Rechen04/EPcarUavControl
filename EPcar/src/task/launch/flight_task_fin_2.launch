@@ -1,0 +1,9 @@
+<launch>
+
+    <include file="$(find yolo)/launch/yolo_service.launch"/>
+
+    <node pkg="flight" type="flight_driver.py" name="flight_driver" output="screen"/>
+
+    <node pkg="task" type="flight_task_fin_2.py" name="flight_task_fin_2" output="screen"/>
+
+</launch>

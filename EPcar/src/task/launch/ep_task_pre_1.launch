@@ -1,0 +1,9 @@
+<launch>
+
+    <include file="$(find yolo)/launch/yolo_service.launch"/>
+
+    <include file="$(find nav_pkg)/launch/Saidao.launch"/>
+
+    <node pkg="task" type="ep_task_pre_1.py" name="ep_task_pre_1" output="screen"/>
+
+</launch>

@@ -1,0 +1,7 @@
+<launch>
+
+    <include file="$(find robomaster_driver)/launch/robomaster_driver.launch"/>
+
+    <include file="$(find yolo)/launch/yolo_service.launch"/>
+
+</launch>

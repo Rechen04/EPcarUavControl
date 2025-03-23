@@ -1,0 +1,8 @@
+<launch>
+
+    <node pkg="ep_car" type="vel_node.py" name="vel_node"/>
+
+    <node pkg="ep_car" type="epchassis_node.py" name="epchassis_node" output="screen"/>
+
+
+</launch>

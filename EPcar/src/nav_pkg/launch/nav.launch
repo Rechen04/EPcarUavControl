@@ -1,0 +1,10 @@
+<launch>
+
+    <!-- map server-->
+    <include file="$(find nav_pkg)/launch/map_server.launch" />
+    <!-- positioning -->
+    <include file="$(find nav_pkg)/launch/amcl.launch" />
+    <!-- planning -->
+    <include file="$(find nav_pkg)/launch/move_base.launch" />
+
+</launch>

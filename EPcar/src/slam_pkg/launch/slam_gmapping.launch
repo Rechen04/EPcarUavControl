@@ -1,0 +1,10 @@
+<launch>
+
+    <include file="$(find robomaster_driver)/launch/robomaster_driver.launch"/>
+
+    <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping"/>
+
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find slam_pkg)/rviz/slam.rviz"/>
+
+    <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name="eleop_twist_keyboard" launch-prefix="gnome-terminal -e"/>
+</launch>

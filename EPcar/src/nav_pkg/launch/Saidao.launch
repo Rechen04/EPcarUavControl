@@ -1,0 +1,10 @@
+<launch>
+    <!--- Run nav -->
+    <include file="$(find nav_pkg)/launch/nav.launch"/>
+
+    <include file="$(find robomaster_driver)/launch/robomaster_driver.launch"/>
+
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find nav_pkg)/rviz/slam_nav.rviz"/>
+
+    
+</launch>
