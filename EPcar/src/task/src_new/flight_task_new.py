@@ -6,7 +6,7 @@ from room_writer import Room_writer
 from flight.srv import *
 from std_msgs.msg import String
 
-pos = (0 , 0 , 0)
+pos = [0 , 0 , 0]
 
 def flight_takeoffOrLanding(state):
     pub_flightstate = rospy.Publisher("flight_takeoff",String,queue_size= 10)
@@ -68,24 +68,24 @@ def nav_to_goal(point):
     rospy.loginfo("Waiting for the flight nav service...")
     flight_client.wait_for_service()
     rospy.sleep(0.5)
-    
-    offset_x, offset_y, offset_z = point - pos
-    targetYaw = 90.2
+    global pos
+    offset = [p - q for p, q in zip(point, pos)]
+    targetYaw = 0.2
     yawThreshold = 1.0
     posThreshold = 0.5
     
-    rospy.loginfo("Starting navigation...")
+    rospy.loginfo("Starting navigation to"+offset)
     
     try:
         # 调用服务
-        flight_response = flight_client.call(offset_x, offset_y, offset_z, targetYaw, yawThreshold, posThreshold)
+        flight_response = flight_client.call(offset, targetYaw, yawThreshold, posThreshold)
         
         # 等待响应
         timeout = rospy.Time.now() + rospy.Duration(10)  # 10秒超时
         while rospy.Time.now() < timeout:
             if flight_response.ack != 0:  # ack = 0 通常代表未完成
-                rospy.loginfo("Navigation Success!")
                 pos = point
+                rospy.loginfo("Navigation Success! Current position:"+ pos )
                 return True
             rospy.sleep(0.1)  # 每 0.1 秒检查一次
         
@@ -133,5 +133,7 @@ nav_point = [
 
 if __name__ == '__main__':
     rospy.init_node("ep_flight_task")
+    flight_takeoffOrLanding(1)
     point = nav_point[0]
     nav_to_goal(point)
+    flight_takeoffOrLanding(2)

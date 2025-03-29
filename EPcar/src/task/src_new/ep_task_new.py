@@ -53,8 +53,8 @@ def callback_flight(msg):
 
 nav_point = [
     [0,0,0],
-    [2.5,0.5,0],#area 1
-    [5,-1.3,0],#area 2
+    [2.5,-0.5,0],#area 1
+    [5,1.3,0],#area 2
     [7,0,0]#area C
         ]
 
@@ -68,11 +68,11 @@ if __name__ == '__main__':
     standing_msg.angular.z = 0
     rospy.Subscriber("flight_takeoff", String, callback_flight)
     nav_to_goal(nav_point[1])
-    rospy.wait_for_message("flight_takeoff", String)
+    # rospy.wait_for_message("flight_takeoff", String)
     rospy.sleep(5)
     nav_to_goal(nav_point[2])
     rospy.Subscriber("flight_landed", String, callback_flight)
-    rospy.wait_for_message("flight_landed", String)
+    # rospy.wait_for_message("flight_landed", String)
     rospy.sleep(5)
     nav_to_goal(nav_point[3])
     rospy.sleep(5)
