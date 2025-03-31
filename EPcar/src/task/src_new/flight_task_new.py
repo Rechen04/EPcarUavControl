@@ -111,7 +111,7 @@ def flight_gimbalControl(pitch):
 
 nav_point = [
     #I区域
-    [-0.75,0.3,1],      #1-1 (x,y,z)
+    [0.1,-0.3,1],      #1-1 (x,y,z)
     [0.75,0.3,1],       #1-2 
     [2,0.3,1],          #1-3 
     [3,0.3,1],          #1-4 
@@ -136,4 +136,8 @@ if __name__ == '__main__':
     flight_takeoffOrLanding(1)
     point = nav_point[0]
     nav_to_goal(point)
-    flight_takeoffOrLanding(2)
+    # flight_takeoffOrLanding(2)
+    photo_client = rospy.ServiceProxy("photoFlight",photoFlight)
+    photo_client.wait_for_service()
+    rospy.sleep(0.5)
+    photo_response = photo_client.call("photoFlight")
