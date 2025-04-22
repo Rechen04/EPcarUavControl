@@ -109,6 +109,7 @@ def flight_gimbalControl(pitch):
         return 0
     return response
 
+
 nav_point = [
     #I区域
     [-0.75,0.3,1],      #1-1 (x,y,z)
@@ -131,9 +132,125 @@ nav_point = [
     [3,-2,1.5]         #2-4 
 ]
 
+def take_photo(image_path):
+    """
+    调用 ROS 服务拍照并保存图像
+    """
+    try:
+        rospy.wait_for_service("photoFlight", timeout=5.0)
+        photo_client = rospy.ServiceProxy("photoFlight", photoFlight)
+        response = photo_client.call("photoCharge")
+        rospy.sleep(0.5)  # 等待图像写入磁盘
+        if not response.result:
+            rospy.logwarn("Photo service responded with failure.")
+            return False
+        return True
+    except (rospy.ServiceException, rospy.ROSException) as e:
+        rospy.logerr(f"Photo service call failed: {e}")
+        return False
+
+def get_offset_from_image(image_path, height_m, fov_deg=78.8):
+    """
+    从拍到的图像中分析红十字相对中心的偏移（单位：米）
+    """
+    img = cv2.imread(image_path)
+    if img is None:
+        rospy.logerr("Failed to load image.")
+        return None
+
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+
+    lower_red1 = np.array([0, 100, 100])
+    upper_red1 = np.array([10, 255, 255])
+    lower_red2 = np.array([160, 100, 100])
+    upper_red2 = np.array([179, 255, 255])
+
+    mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
+    mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
+    mask = cv2.bitwise_or(mask1, mask2)
+
+    kernel = np.ones((5, 5), np.uint8)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if not contours:
+        return None
+
+    largest = max(contours, key=cv2.contourArea)
+    M = cv2.moments(largest)
+    if M["m00"] == 0:
+        return None
+
+    cx = int(M["m10"] / M["m00"])
+    cy = int(M["m01"] / M["m00"])
+
+    img_h, img_w = img.shape[:2]
+    center_x = img_w // 2
+    center_y = img_h // 2
+
+    offset_x_px = cx - center_x
+    offset_y_px = cy - center_y
+
+    # 粗略换算：像素 → 米
+    fov_rad = np.deg2rad(fov_deg)
+    meters_per_pixel = (2 * height_m * np.tan(fov_rad / 2)) / img_w
+
+    dx = offset_x_px * meters_per_pixel  # +右，-左
+    dy = offset_y_px * meters_per_pixel  # +前，-后（根据机头方向校正）
+
+    return dx, dy
+
+def align_to_red_cross(height_m, tolerance=0.05, max_iter=10):
+    """
+    自动调整无人机位置直到对准红十字
+    """
+    img_path = "/home/tta/catkin_ws/src/yolo/src/yolov5/photo_charge.jpg"
+
+    for i in range(max_iter):
+        rospy.loginfo(f"[视觉校准] 第 {i+1} 次拍照并校正")
+
+        if not take_photo(img_path):
+            rospy.logwarn("拍照失败，跳过本次循环")
+            continue
+
+        offset = get_offset_from_image(img_path, height_m)
+        if offset is None:
+            rospy.logwarn("未检测到红十字")
+            continue
+
+        dx, dy = offset
+        rospy.loginfo(f"红十字偏移量: dx = {dx:.2f}m, dy = {dy:.2f}m")
+
+        if abs(dx) < tolerance and abs(dy) < tolerance:
+            rospy.loginfo("无人机已对准红十字 ✅")
+            return True
+
+        nav_to_relative_offset(dx, dy)
+        rospy.sleep(1.0)  # 等待无人机移动完成
+
+    rospy.logwarn("未能在规定次数内对准红十字 ❌")
+    return False
+
 if __name__ == '__main__':
     rospy.init_node("ep_flight_task")
     flight_takeoffOrLanding(1)
     point = nav_point[0]
     nav_to_goal(point)
+    flight_gimbalControl(-90)
+    photo_client = rospy.ServiceProxy("photoFlight",photoFlight)
+    photo_client.wait_for_service()
+    rospy.sleep(0.5)
+    photo_response = photo_client.call("photoCharge")
+    success = False
+    while not success and not rospy.is_shutdown():
+        photo_response = photo_client.call("photoCharge")
+        if photo_response.result:
+            rospy.loginfo("PhotoCharge successful.")
+            success = True
+        else:
+            rospy.logwarn("PhotoCharge failed. Retrying in 1s...")
+            rospy.sleep(1.0)
+    
+
     flight_takeoffOrLanding(2)
